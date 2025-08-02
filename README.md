@@ -28,6 +28,7 @@ Resources:
 * Start with metal and mineral resources, manual gathering, to then build an energy creation system.
 
 Rough mermaid diagram:
+```mermaid
 flowchart TD
 planet["Initial Planet"]
 planet --> Resources
@@ -40,6 +41,7 @@ Resources --> Exploration
 Resources <--> Empire
 Ships --> Empire
 Exploration --> Empire
+```
 
 List of things to do:
 

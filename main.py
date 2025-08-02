@@ -2,16 +2,20 @@
 
 import asyncio  # added for pygbag
 from dataclasses import dataclass, field
+from typing import List
 
 import pygame
 
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+RESOLUTION_WIDTH = 1280
+RESOLUTION_HEIGHT = 720
+FONT_SIZE = 16
+screen = pygame.display.set_mode((RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
 clock = pygame.time.Clock()
 
 # Create a font object
-font = pygame.font.Font("freesansbold.ttf", 16)  # None for default font, 74 is the size
+font = pygame.font.Font("freesansbold.ttf", FONT_SIZE)  # None for default font
 
 # Define colors
 WHITE = (255, 255, 255)
@@ -170,9 +174,60 @@ class Resource:
 
 
 resources = {
-    "metal": Resource(colour=GREY, location=50),
+    "metal": Resource(colour=GREY, location=50, speed=1.5),
     "minerals": Resource(colour=BLUE, location=110),
     "energy": Resource(colour=ORANGE, location=170),
+}
+
+
+# TechnologyTree requirements:
+# Needs to know what resources a technology requires
+# Needs to know what technology it depends on
+
+
+@dataclass
+class ResourceCost:
+    metal: int = 0
+    minerals: int = 0
+    energy: int = 0
+
+
+@dataclass
+class Technology:
+    name: str
+    cost: ResourceCost
+    dependencies: List[str] = field(default_factory=list)
+    unlocked: bool = False
+
+    def can_unlock(self, resources, tech_tree):
+        if (
+            resources["metal"].quantity >= self.metal
+            and resources["minerals"].quantity >= self.cost.minerals
+            and resources["energy"].quantity >= self.cost.energy
+            and all(tech_tree[dep].unlocked for dep in self.dependencies)
+        ):
+            return True
+        return False
+
+    def unlock(self, resources, tech_tree):
+        if self.can_unlock(resources, tech_tree):
+            resources["metal"].quantity -= self.cost.metal
+            resources["minerals"].quantity -= self.cost.minerals
+            resources["energy"].quantity -= self.cost.energy
+            self.unlocked = True
+            return True
+        return False
+
+
+tech_tree = {
+    "energy": Technology(
+        name="Energy", cost=ResourceCost(metal=10, minerals=10, energy=0)
+    ),
+    "automators": Technology(
+        name="Automators",
+        cost=ResourceCost(metal=10, minerals=20, energy=10),
+        dependencies=["energy"],
+    ),
 }
 
 
@@ -200,6 +255,7 @@ def draw_resource(myresource, name):
     return resource, length, draw
 
 
+# Unused at present. Still in from 'notadventurecapitalist' version.
 def draw_task(
     foreground_colour, background_colour, y_coord, value, draw, length, speed
 ):
@@ -219,6 +275,7 @@ def draw_task(
     return collide_object, length, draw
 
 
+# Unused at present. Still in from 'notadventurecapitalist' version.
 def draw_buttons(
     foreground_colour, background_colour, x_coord, cost, owned, manager_cost
 ):
@@ -239,14 +296,23 @@ def draw_buttons(
     return colour_button, manager_button
 
 
+def draw_tech_tree(foreground_colour, background_colour, x_coord, y_coord, tech_tree):
+    title_text = font.render("Technology", True, foreground_colour)
+    screen.blit(title_text, (x_coord, y_coord))
+    for i, tech in enumerate(tech_tree):
+        pygame.draw.rect(
+            screen, foreground_colour, [x_coord, y_coord + (i * 35 + 35), 200, 30]
+        )
+        tech_text = font.render(tech_tree[tech].name, True, BLACK)
+        screen.blit(tech_text, (x_coord + 6, y_coord + (i * 35 + 35)))
+
+
 async def main():  # async for pygbag
     running = True
     global score
-    dt = 0
+    # dt = 0
 
-    player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-
-    my_empire = Empire()
+    # my_empire = Empire()
     if not running:  # added for pygbag, to replace pygame.quit
         return
 
@@ -276,6 +342,8 @@ async def main():  # async for pygbag
             "Money: $" + str(round(score, 2)), True, WHITE, BACKGROUND
         )
         screen.blit(display_score, (10, 5))
+
+        draw_tech_tree(ORANGE, WHITE, 600, 30, tech_tree)
         # buy_more = font.render("Buy More:", True, WHITE)
         # screen.blit(buy_more, (10, 315))
         # buy_managers = font.render("Buy Managers:", True, WHITE)

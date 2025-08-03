@@ -48,7 +48,7 @@ List of things to do:
 * Gather resources manually
 * Technology Tree System - IN PROGRESS - can unlock technologies
  * Technology for energy - DONE
- * Technology for automators - TODO
+ * Technology for automators - DONE
  * Technology for ships - TODO
  * Technology for exploration - TODO
  * Technology for terraforming - TODO

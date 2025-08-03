@@ -324,7 +324,7 @@ def draw_tech_tree(
 async def main():  # async for pygbag
     running = True
     global score
-    # dt = 0
+    dt = 0
 
     # my_empire = Empire()
     if not running:  # added for pygbag, to replace pygame.quit
@@ -332,9 +332,10 @@ async def main():  # async for pygbag
 
     while running:
         clock.tick(FRAMERATE)
-        # for business in businesses:
-        #     if business["manager_owned"] and not business["draw"]:
-        #         business["draw"] = True
+
+        for resource in resources:
+            if tech_tree["automators"].unlocked and not resources[resource].draw:
+                resources[resource].draw = True
 
         # fill the screen with a color to wipe away anything from last frame
         screen.fill(BACKGROUND)
@@ -360,10 +361,10 @@ async def main():  # async for pygbag
             #     business["manager_cost"],
             # )
 
-        display_score = font.render(
-            "Money: $" + str(round(score, 2)), True, WHITE, BACKGROUND
-        )
-        screen.blit(display_score, (10, 5))
+        # display_score = font.render(
+        #     "Money: $" + str(round(score, 2)), True, WHITE, BACKGROUND
+        # )
+        # screen.blit(display_score, (10, 5))
 
         draw_tech_tree(RED, BLUE, GREEN, 600, 30, tech_tree)
         # buy_more = font.render("Buy More:", True, WHITE)
@@ -380,8 +381,8 @@ async def main():  # async for pygbag
         # spaceships_surface = font.render(f"{Empire.spaceships}", True, WHITE)
         # screen.blit(spaceships_surface, (100, 350))
 
-        # delta_surface = font.render(f'{dt}', True, WHITE)
-        # screen.blit(delta_surface, (0, 0))
+        delta_surface = font.render(f"{dt}", True, WHITE)
+        screen.blit(delta_surface, (0, 0))
 
         #        pygame.draw.circle(screen, "red", player_pos, 40)
 

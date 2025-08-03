@@ -1,14 +1,37 @@
-Simple Idle Space Themed Game
+# Cosmic Idle
+Simple Idle Game - Space Themed
 
-Outline:
+> [!WARNING]
+> Very much a work in progress at this time.
+
+## Game Outline:
 * Gather resources
 * Build ships from resources
 * Gain technologies
 * To explore the galaxy/universe
 * Build empire
 
+## How to run:
+```
+git clone https://github.com/tidalvirus/cosmicidle.git
+cd cosmicidle
+uv run main.py
+```
+
+## List of things to do:
+
+- [x] Gather resources manually - DONE
+- [ ] Technology Tree System - IN PROGRESS - can unlock technologies
+ - [x] Technology for energy - DONE
+ - [x] Technology for automators - DONE
+ - [ ] Technology for ships - TODO
+ - [ ] Technology for exploration - TODO
+ - [ ] Technology for terraforming - TODO
+ - [ ] Technology for empire - TODO
+- [ ] Increase speed of resource collection - TODO
 
 
+## Other notes:
 Each planet in the empire will not consume resources after initial cost
 
 There will be no combat
@@ -42,15 +65,3 @@ Resources <--> Empire
 Ships --> Empire
 Exploration --> Empire
 ```
-
-List of things to do:
-
-* Gather resources manually
-* Technology Tree System - IN PROGRESS - can unlock technologies
- * Technology for energy - DONE
- * Technology for automators - DONE
- * Technology for ships - TODO
- * Technology for exploration - TODO
- * Technology for terraforming - TODO
- * Technology for empire - TODO
-* Increase speed of resource collection - TODO

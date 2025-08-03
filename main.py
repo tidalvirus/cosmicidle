@@ -167,16 +167,18 @@ class Resource:
     location: int
     quantity: int = 0
     increaseby: int = 1
-    draw: bool = False
-    length: int = 0
-    speed: int = 1
+    draw: bool = False  # is progress bar currently being drawn
+    length: int = 0  # length of progress bar
+    speed: float = 5  # Can be floating point
     name: str = field(default="")
+    collide_object: pygame.Rect = None
+    unlocked: bool = True  # only energy will be locked at first
 
 
 resources = {
-    "metal": Resource(colour=GREY, location=50, speed=1.5),
-    "minerals": Resource(colour=BLUE, location=110),
-    "energy": Resource(colour=ORANGE, location=170),
+    "metal": Resource(colour=GREY, location=50, speed=5, quantity=30),
+    "minerals": Resource(colour=BLUE, location=110, quantity=30),
+    "energy": Resource(colour=ORANGE, location=170, unlocked=False, quantity=30),
 }
 
 
@@ -198,10 +200,11 @@ class Technology:
     cost: ResourceCost
     dependencies: List[str] = field(default_factory=list)
     unlocked: bool = False
+    collide_object: pygame.Rect = None
 
     def can_unlock(self, resources, tech_tree):
         if (
-            resources["metal"].quantity >= self.metal
+            resources["metal"].quantity >= self.cost.metal
             and resources["minerals"].quantity >= self.cost.minerals
             and resources["energy"].quantity >= self.cost.energy
             and all(tech_tree[dep].unlocked for dep in self.dependencies)
@@ -210,12 +213,14 @@ class Technology:
         return False
 
     def unlock(self, resources, tech_tree):
-        if self.can_unlock(resources, tech_tree):
+        if self.can_unlock(resources, tech_tree) and not self.unlocked:
             resources["metal"].quantity -= self.cost.metal
             resources["minerals"].quantity -= self.cost.minerals
             resources["energy"].quantity -= self.cost.energy
             self.unlocked = True
+            print("Unlocking")
             return True
+        print("Unable to unlock")
         return False
 
 
@@ -225,8 +230,8 @@ tech_tree = {
     ),
     "automators": Technology(
         name="Automators",
-        cost=ResourceCost(metal=10, minerals=20, energy=10),
-        dependencies=["energy"],
+        cost=ResourceCost(metal=20, minerals=20, energy=10),
+        dependencies={"energy"},
     ),
 }
 
@@ -296,15 +301,24 @@ def draw_buttons(
     return colour_button, manager_button
 
 
-def draw_tech_tree(foreground_colour, background_colour, x_coord, y_coord, tech_tree):
-    title_text = font.render("Technology", True, foreground_colour)
+def draw_tech_tree(
+    locked_colour, can_unlock_colour, unlocked_colour, x_coord, y_coord, tech_tree
+):
+    title_text = font.render("Technology", True, WHITE)
     screen.blit(title_text, (x_coord, y_coord))
     for i, tech in enumerate(tech_tree):
-        pygame.draw.rect(
+        if tech_tree[tech].unlocked:
+            foreground_colour = GREEN
+        elif tech_tree[tech].can_unlock(resources, tech_tree):
+            foreground_colour = BLUE
+        else:
+            foreground_colour = RED
+        collide_object = pygame.draw.rect(
             screen, foreground_colour, [x_coord, y_coord + (i * 35 + 35), 200, 30]
         )
-        tech_text = font.render(tech_tree[tech].name, True, BLACK)
+        tech_text = font.render(tech_tree[tech].name, True, WHITE, BACKGROUND)
         screen.blit(tech_text, (x_coord + 6, y_coord + (i * 35 + 35)))
+        tech_tree[tech].collide_object = collide_object
 
 
 async def main():  # async for pygbag
@@ -325,10 +339,18 @@ async def main():  # async for pygbag
         # fill the screen with a color to wipe away anything from last frame
         screen.fill(BACKGROUND)
 
+        # Check if resources are unlocked:
+        for resource in resources:
+            if not resources[resource].unlocked:
+                # check tech tree for unlocks
+                if tech_tree[resource].unlocked:
+                    resources[resource].unlocked = True
+
         for resource, values in resources.items():
-            values.collide_object, values.length, values.draw = draw_resource(
-                values, resource
-            )
+            if resources[resource].unlocked:
+                values.collide_object, values.length, values.draw = draw_resource(
+                    values, resource
+                )
             # business["colour_button"], business["manager_button"] = draw_buttons(
             #     business["colour"],
             #     BACKGROUND,
@@ -343,7 +365,7 @@ async def main():  # async for pygbag
         )
         screen.blit(display_score, (10, 5))
 
-        draw_tech_tree(ORANGE, WHITE, 600, 30, tech_tree)
+        draw_tech_tree(RED, BLUE, GREEN, 600, 30, tech_tree)
         # buy_more = font.render("Buy More:", True, WHITE)
         # screen.blit(buy_more, (10, 315))
         # buy_managers = font.render("Buy Managers:", True, WHITE)
@@ -382,8 +404,16 @@ async def main():  # async for pygbag
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for resource, values in resources.items():
-                    if values.collide_object.collidepoint(event.pos):
+                    # If a resource (like energy) is locked, then there is no collide_object
+                    if values.collide_object and values.collide_object.collidepoint(
+                        event.pos
+                    ):
                         values.draw = True
+                for technology, values in tech_tree.items():
+                    if values.collide_object and values.collide_object.collidepoint(
+                        event.pos
+                    ):
+                        values.unlock(resources, tech_tree)
 
             #     for business in businesses:
             #         if business["task"].collidepoint(event.pos):

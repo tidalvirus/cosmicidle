@@ -65,3 +65,30 @@ Resources <--> Empire
 Ships --> Empire
 Exploration --> Empire
 ```
+
+Crazy diagram for initial tech tree:
+```mermaid
+flowchart LR
+
+Ships --> Exploration --> Terraform --> Empire
+
+Metals -- 50 --> Energy
+Metals -- 500 --> Ships
+Metals -- 5000 --> Exploration
+Metals -- 50000 --> Terraform
+Metals -- 500000 --> Empire
+Minerals -- 50 --> Energy
+Minerals -- 500 --> Ships
+Minerals -- 5000 --> Exploration
+Minerals -- 50000 --> Terraform
+Minerals -- 500000 --> Empire
+
+Energy -- 500 --> Ships
+Energy -- 5000 --> Exploration
+Energy -- 50000 --> Terraform
+Energy -- 500000 --> Empire
+
+Energy -- 50 --> Automators
+Minerals -- 50 --> Automators
+Metals -- 50 --> Automators
+```

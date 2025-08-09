@@ -72,12 +72,12 @@ flowchart LR
 
 Ships --> Exploration --> Terraform --> Empire
 
-Metals -- 50 --> Energy
+Metals -- 10 --> Energy
 Metals -- 500 --> Ships
 Metals -- 5000 --> Exploration
 Metals -- 50000 --> Terraform
 Metals -- 500000 --> Empire
-Minerals -- 50 --> Energy
+Minerals -- 10 --> Energy
 Minerals -- 500 --> Ships
 Minerals -- 5000 --> Exploration
 Minerals -- 50000 --> Terraform
@@ -88,7 +88,7 @@ Energy -- 5000 --> Exploration
 Energy -- 50000 --> Terraform
 Energy -- 500000 --> Empire
 
-Energy -- 50 --> Automators
-Minerals -- 50 --> Automators
-Metals -- 50 --> Automators
+Energy -- 20 --> Automators
+Minerals -- 20 --> Automators
+Metals -- 20 --> Automators
 ```

@@ -24,8 +24,8 @@ uv run main.py
 - [ ] Technology Tree System - IN PROGRESS - can unlock technologies
  - [x] Technology for energy - DONE
  - [x] Technology for automators - DONE
- - [ ] Technology for ships - TODO
- - [ ] Technology for exploration - TODO
+ - [x] Technology for ships - DONE
+ - [x] Technology for exploration - TODO
  - [ ] Technology for terraforming - TODO
  - [ ] Technology for empire - TODO
 - [ ] Increase speed of resource collection - TODO

@@ -176,10 +176,13 @@ class Resource:
 
 
 resources = {
-    "metal": Resource(colour=GREY, location=50, speed=5, quantity=500),
-    "minerals": Resource(colour=BLUE, location=110, quantity=500),
-    "energy": Resource(colour=ORANGE, location=170, unlocked=False, quantity=500),
+    "metal": Resource(colour=GREY, location=50, speed=5, quantity=5510),
+    "minerals": Resource(colour=BLUE, location=110, quantity=5510),
+    "energy": Resource(colour=ORANGE, location=170, unlocked=False, quantity=5500),
     "ships": Resource(colour=ORANGE, location=230, unlocked=False, quantity=5000),
+    "exploration": Resource(
+        colour=ORANGE, location=290, unlocked=False, quantity=50000
+    ),
 }
 
 
@@ -238,6 +241,11 @@ tech_tree = {
         name="Ships",
         cost=ResourceCost(metal=500, minerals=500, energy=500),
         dependencies={"automators"},
+    ),
+    "exploration": Technology(
+        name="Exploration",
+        cost=ResourceCost(metal=5000, minerals=5000, energy=5000),
+        dependencies={"ships"},
     ),
 }
 

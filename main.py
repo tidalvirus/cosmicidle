@@ -30,6 +30,11 @@ GREY = (127, 127, 127)
 BACKGROUND = BLACK
 FRAMERATE = 60
 
+# Define locations on screen
+
+TASK_X_TEXT = 0
+TASK_X_RECT = 120
+
 score = 0
 
 # resources = {
@@ -264,13 +269,20 @@ def draw_resource(myresource, name):
         length = 0
         myresource.quantity += value
 
-    resource = pygame.draw.rect(screen, foreground_colour, [75, y_coord - 15, 200, 30])
-    pygame.draw.rect(screen, BACKGROUND, [80, y_coord - 10, 190, 20])
-    pygame.draw.rect(screen, foreground_colour, [75, y_coord - 15, length, 30])
-    quantity_text = font.render(str(round(myresource.quantity, 2)), True, WHITE)
-    screen.blit(quantity_text, (285, y_coord - 8))
+    # labels
     resource_text = font.render(name, True, WHITE)
-    screen.blit(resource_text, (5, y_coord - 8))
+    screen.blit(resource_text, (TASK_X_TEXT + 5, y_coord - 8))
+
+    # progress bars, external rectangle will be used as collide object
+    resource = pygame.draw.rect(
+        screen, foreground_colour, [TASK_X_RECT, y_coord - 15, 200, 30]
+    )
+    pygame.draw.rect(screen, BACKGROUND, [TASK_X_RECT + 5, y_coord - 10, 190, 20])
+    pygame.draw.rect(screen, foreground_colour, [TASK_X_RECT, y_coord - 15, length, 30])
+
+    quantity_text = font.render(str(round(myresource.quantity, 2)), True, WHITE)
+    screen.blit(quantity_text, (TASK_X_RECT + 205, y_coord - 8))
+
     return resource, length, draw
 
 

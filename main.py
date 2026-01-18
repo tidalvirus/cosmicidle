@@ -181,12 +181,20 @@ class Resource:
 
 
 resources = {
-    "metal": Resource(colour=GREY, location=50, speed=5, quantity=5510),
-    "minerals": Resource(colour=BLUE, location=110, quantity=5510),
-    "energy": Resource(colour=ORANGE, location=170, unlocked=False, quantity=5500),
-    "ships": Resource(colour=ORANGE, location=230, unlocked=False, quantity=5000),
+    "metal": Resource(colour=GREY, location=50, speed=5, quantity=0),
+    "minerals": Resource(colour=BLUE, location=110, speed=4, quantity=0),
+    "energy": Resource(
+        colour=ORANGE, location=170, speed=3, unlocked=False, quantity=0
+    ),
+    "ships": Resource(colour=ORANGE, location=230, speed=2, unlocked=False, quantity=0),
     "exploration": Resource(
-        colour=ORANGE, location=290, unlocked=False, quantity=50000
+        colour=ORANGE, location=290, speed=1, unlocked=False, quantity=0
+    ),
+    "terraform": Resource(
+        colour=ORANGE, location=350, speed=0.5, unlocked=False, quantity=0
+    ),
+    "empire": Resource(
+        colour=PURPLE, location=420, speed=0.1, unlocked=False, quantity=0
     ),
 }
 
@@ -201,6 +209,7 @@ class ResourceCost:
     metal: int = 0
     minerals: int = 0
     energy: int = 0
+    ships: int = 0
 
 
 @dataclass
@@ -216,6 +225,7 @@ class Technology:
             resources["metal"].quantity >= self.cost.metal
             and resources["minerals"].quantity >= self.cost.minerals
             and resources["energy"].quantity >= self.cost.energy
+            and resources["ships"].quantity >= self.cost.ships
             and all(tech_tree[dep].unlocked for dep in self.dependencies)
         ):
             return True
@@ -226,6 +236,7 @@ class Technology:
             resources["metal"].quantity -= self.cost.metal
             resources["minerals"].quantity -= self.cost.minerals
             resources["energy"].quantity -= self.cost.energy
+            resources["ships"].quantity -= self.cost.ships
             self.unlocked = True
             print("Unlocking")
             return True
@@ -234,9 +245,7 @@ class Technology:
 
 
 tech_tree = {
-    "energy": Technology(
-        name="Energy", cost=ResourceCost(metal=10, minerals=10, energy=0)
-    ),
+    "energy": Technology(name="Energy", cost=ResourceCost(metal=10, minerals=10)),
     "automators": Technology(
         name="Automators",
         cost=ResourceCost(metal=20, minerals=20, energy=10),
@@ -244,13 +253,23 @@ tech_tree = {
     ),
     "ships": Technology(
         name="Ships",
-        cost=ResourceCost(metal=500, minerals=500, energy=500),
+        cost=ResourceCost(metal=100, minerals=100, energy=100),
         dependencies={"automators"},
     ),
     "exploration": Technology(
         name="Exploration",
-        cost=ResourceCost(metal=5000, minerals=5000, energy=5000),
+        cost=ResourceCost(metal=250, minerals=250, energy=250, ships=10),
         dependencies={"ships"},
+    ),
+    "terraform": Technology(
+        name="Terraform",
+        cost=ResourceCost(metal=500, minerals=500, energy=500, ships=100),
+        dependencies={"exploration"},
+    ),
+    "empire": Technology(
+        name="Empire",
+        cost=ResourceCost(metal=1000, minerals=1000, energy=1000, ships=1000),
+        dependencies={"terraform"},
     ),
 }
 

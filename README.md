@@ -21,7 +21,7 @@ uv run main.py
 ## List of things to do:
 
 - [x] Gather resources manually - DONE
-- [ ] Technology Tree System - IN PROGRESS - can unlock technologies
+- [x] Technology Tree System - IN PROGRESS - can unlock technologies
  - [x] Technology for energy - DONE
  - [x] Technology for automators - DONE
  - [x] Technology for ships - DONE
